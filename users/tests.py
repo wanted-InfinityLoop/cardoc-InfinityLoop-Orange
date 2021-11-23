@@ -112,10 +112,7 @@ class SignInViewTest(TestCase):
         )
 
         self.access_token = jwt.encode(
-            {
-                "id"  : str(user.id),
-                "exp" : datetime.utcnow() + timedelta(days = 3)
-            }, SECRET_KEY, algorithm = "HS256"
+            {"id"  : str(user.id)}, SECRET_KEY, algorithm = "HS256"
         )
 
     def tearDown(self):
@@ -137,3 +134,45 @@ class SignInViewTest(TestCase):
             "access_token" : self.access_token
         })
         self.assertEqual(response.status_code, 200)
+
+    def test_post_sign_in_invalid_email(self):
+        client = Client()
+        data   = {
+            "email"    : "test12@gmail.com",
+            "password" : "test1234!@"
+        }
+
+        response = client.post(
+            '/users/signin', json.dumps(data), content_type = "application/json"
+        )
+
+        self.assertEqual(response.json(), {"message" : "INVALID_USER"})
+        self.assertEqual(response.status_code, 401)
+
+    def test_post_sign_in_invalid_email(self):
+        client = Client()
+        data   = {
+            "email"    : "test123@gmail.com",
+            "password" : "test123!@"
+        }
+
+        response = client.post(
+            '/users/signin', json.dumps(data), content_type = "application/json"
+        )
+
+        self.assertEqual(response.json(), {"message" : "INVALID_USER"})
+        self.assertEqual(response.status_code, 401)
+
+    def test_post_sign_in_key_error(self):
+        client = Client()
+        data   = {
+            "emial"    : "test123@gmail.com",
+            "password" : "test123!@"
+        }
+
+        response = client.post(
+            '/users/signin', json.dumps(data), content_type = "application/json"
+        )
+
+        self.assertEqual(response.json(), {"message" : "KEY_ERROR"})
+        self.assertEqual(response.status_code, 400)

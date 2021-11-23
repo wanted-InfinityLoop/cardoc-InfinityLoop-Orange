@@ -6,7 +6,7 @@ from core.models import TimeStamp
 
 
 class FrontTire(TimeStamp):
-    id           = models.UUIDField(primary_key=True, default=uuid4().hex, editable=False)
+    id           = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     width        = models.PositiveSmallIntegerField()
     aspect_ratio = models.PositiveSmallIntegerField()
     wheel_size   = models.PositiveSmallIntegerField()
@@ -16,13 +16,13 @@ class FrontTire(TimeStamp):
 
 
 class RearTire(TimeStamp):
-    id           = models.UUIDField(primary_key=True, default=uuid4().hex, editable=False)
+    id           = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     width        = models.PositiveSmallIntegerField()
     aspect_ratio = models.PositiveSmallIntegerField()
     wheel_size   = models.PositiveSmallIntegerField()
 
     class Meta:
-        db_table = 'front_tires'
+        db_table = 'rear_tires'
 
 
 class Car(TimeStamp):
@@ -33,4 +33,4 @@ class Car(TimeStamp):
     rear_tire  = models.ForeignKey('RearTire', null = True, on_delete = models.SET_NULL)
 
     class Meta:
-        db_table = 'rear_tires'
+        db_table = 'cars'

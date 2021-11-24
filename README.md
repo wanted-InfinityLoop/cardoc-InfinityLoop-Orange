@@ -154,6 +154,43 @@ http://3.36.59.83:8000/
 
 <br>
 
+# 기능 설명
+
+1. 회원가입
+  - `email`, `password`, `name` 3가지 값을 payload body로 입력 받는다.
+
+2. 로그인
+  - `email`, `password` 로 값을 body에 전달하고 access token(jwt)를 응답으로 받는다.
+
+3. 타이어 정보 저장
+  - 유저 이메일(`email`), 자동차 정보 아이디(`trim_id`)를 한 쌍으로 하여 5쌍 까지 요청 가능
+  - 5쌍이 넘어갈 시 payload error
+  - 외부 API 호출 시 timeout 3초 설정
+  - 각 요청을 멀티 스레드를 활용하여 동시성 구현
+  - 응답은 각 요청에 대한 응답으로 구현됨
+
+```json
+{
+    "results" : [
+        {
+            "email" : "example1@example.com",
+            "message" : "CREATED",
+            "status" : 201
+        },
+        {
+            "email" : "example2@example.com",
+            "message" : "TIME_OUT",
+            "status" : 400
+        }
+    ]
+}
+```
+
+4. 타이어 정보 조회
+  - `Path Param` 으로 유저 아이디를 전달
+  - `Query Param` 으로 `Offset`, `limit`를 전달 받아 pagination 구현
+  - 유저가 가진 자동차의 타이어 정보 전부 조회
+
 # 🔖 설치 및 실행 방법
 
 ### 로컬 및 테스트용

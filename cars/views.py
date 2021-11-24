@@ -3,9 +3,11 @@ import requests
 import re
 import concurrent.futures
 import time
+from uuid import UUID
 
 from django.http  import JsonResponse
 from django.views import View
+from django.http  import HttpResponseForbidden, HttpResponse
 
 from .models          import Car, FrontTire, RearTire
 from users.models     import User
@@ -96,3 +98,32 @@ class TireCreateView(View):
         ]
 
         return JsonResponse({"messages" : messages}, status=201)
+
+    @authorization
+    def get(self, request, user_id):
+        user = request.user
+        if str(user.id.hex) != str(user_id):
+            return HttpResponseForbidden("FORBIDDEN", status = 403)
+
+        OFFSET = request.GET.get("offset", 0)
+        LIMIT  = request.GET.get("limit", 5)
+
+        cars = Car.objects.select_related('front_tire', 'rear_tire').filter(user_id=user.id)[OFFSET:OFFSET+LIMIT]
+
+        return JsonResponse({"results": [
+            {
+                "model_name" : car.model_name,
+                "front" : {
+                    "width"        : car.front_tire.width,
+                    "aspect_ratio" : car.front_tire.aspect_ratio,
+                    "wheel_size"   : car.front_tire.wheel_size
+                },
+                "rear" : {
+                    "width"        : car.rear_tire.width,
+                    "aspect_ratio" : car.rear_tire.aspect_ratio,
+                    "wheel_size"   : car.rear_tire.wheel_size
+                }
+            } for car in cars
+        ]}, status = 200) if cars.count() else HttpResponse("NO_CONTENT", status = 204)
+
+        

@@ -1,12 +1,17 @@
 import json
 import requests
 import re
+import concurrent.futures
+import time
 
-from django.http  import JsonResponse, response
+from django.http  import JsonResponse
 from django.views import View
 
-from .models      import Car, FrontTire, RearTire
-from users.models import User
+from .models          import Car, FrontTire, RearTire
+from users.models     import User
+from core.validations import tire_info_validator
+from core.utils       import authorization
+
 
 class Tire():
     def __init__(self, tire_type):
@@ -15,54 +20,79 @@ class Tire():
         self.aspect_ratio = tire_info[1]
         self.wheel_size   = tire_info[2]
 
+
 class TireCreateView(View):
-    def post(self, request):
+    def get_tire_and_user_info(self, data):
         try:
-            datas = json.loads(request.body)
+            time.sleep(0.5)
+            email   = data["email"]
+            trim_id = data["trim_id"]
+            user    = User.objects.get(email = email)
+            url     = f"https://dev.mycar.cardoc.co.kr/v1/trim/{trim_id}"
 
-            if len(datas) > 5:
-                return JsonResponse({"message" : "PAYLOAD_TOO_LONG"}, status=413)
-            
-            for data in datas:
-                email   = data["email"]
-                trim_id = data["trim_id"]
+            response = requests.get(url, timeout = 3)
+            print(response.url)
 
-                url         = f"https://dev.mycar.cardoc.co.kr/v1/trim/{trim_id}"
-                resp        = requests.get(url).text
-                export_data = json.loads(resp)
+            if response.status_code!=200:
+                return (user.email, "BAD_REQUEST", 400)
 
-                if not User.objects.filter(email = email).exists():
-                    return JsonResponse({"message" : "USER_DOES_NOT_EXIST"}, status=400)
+            external_data = response.json()
 
-                user = User.objects.get(email = email)
+            model_name = external_data["modelName"]
 
-                model_name = export_data["modelName"]
-                front_tire_info = Tire(export_data["spec"]["driving"]["frontTire"]["value"])
-                rear_tire_info  = Tire(export_data["spec"]["driving"]["rearTire"]["value"])
+            if tire_info_validator(external_data["spec"]["driving"]["frontTire"]["value"]):
+                front_tire_info = Tire(external_data["spec"]["driving"]["frontTire"]["value"])
 
-                front_tire, front_is_created =\
+                front_tire, _ =\
                     FrontTire.objects.get_or_create(
                         width        = front_tire_info.width,
                         aspect_ratio = front_tire_info.aspect_ratio,
                         wheel_size   = front_tire_info.wheel_size
                     )
 
-                rear_tire, rear_is_created =\
+            if tire_info_validator(external_data["spec"]["driving"]["rearTire"]["value"]):
+                rear_tire_info  = Tire(external_data["spec"]["driving"]["rearTire"]["value"])
+                
+                rear_tire, _ =\
                     RearTire.objects.get_or_create(
                         width        = rear_tire_info.width,
                         aspect_ratio = rear_tire_info.aspect_ratio,
                         wheel_size   = rear_tire_info.wheel_size
                     )
 
-                if front_is_created:
-                    Car.objects.create(
-                        model_name = model_name,
+            Car.objects.update_or_create(
+                model_name = model_name,
+                user       = user,
+                front_tire = front_tire,
+                rear_tire  = rear_tire
+            )
 
-                    )
+            return (user.email, "CREATED", 200)
+        
+        except KeyError:
+            return ("empty", "KEY_ERROR", 400)
 
-            return JsonResponse({"message" : front_tire.width}, status=200)
+        except TimeoutError:
+            return ("empty", "TIME_OUT", 400)
 
-        except Exception:
-            pass
+        except User.DoesNotExist:
+            return ("empty", "USER_DOES_NOT_EXIST", 404)
 
+    def post(self, request):
+        datas   = json.loads(request.body)
 
+        if len(datas) > 5:
+            return JsonResponse({"message" : "PAYLOAD_TOO_LONG"}, status=413)
+        
+        with concurrent.futures.ThreadPoolExecutor(max_workers = 5) as executor:
+            results = [exe for exe in executor.map(self.get_tire_and_user_info, datas)]
+
+        messages = [
+            {
+                "id" : result[0],
+                "message" : result[1],
+                "status" : result[2]
+            } for result in results
+        ]
+
+        return JsonResponse({"messages" : messages}, status=201)

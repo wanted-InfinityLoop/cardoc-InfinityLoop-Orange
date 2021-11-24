@@ -1,17 +1,13 @@
-# 🎊 Wanted X Wecode PreOnBoarding Backend Course | 무한루프 팀
+# Wanted X Wecode PreOnBoarding Backend Course
 
-원티드 3주차 기업 과제 :  Deer Corporation Assignment Project
-✅ 디어코퍼레이션 기업 과제입니다.
-
-- [디어코퍼레이션 사이트](https://web.deering.co/)
-- [디어코퍼레이션 채용공고 링크](https://www.wanted.co.kr/wd/59051)
+원티드 4주차 기업 과제 :  Cardoc Individual Assignment Project
+✅ 카닥 기업 과제입니다.
 
 <br>
 <br>
 
 
 # 🔖 목차
-- Team 소개
 - 과제 내용
 - 기술 환경 및 tools
 - 모델링 ERD
@@ -23,22 +19,22 @@
 <br>
 <br>
 
-# 🧑‍🤝‍🧑 Team 소개
-
-| 이름 | 담당 기능 | 블로그 |
-| :---: | :---: | :---: | 
-| 공통 | 초기환경 설정, DB 모델링, postman api 문서 작성, README.md 작성, 배포, UnitTest | X |
-| [유동헌](https://github.com/dhhyy) | 킥보드 대여 기능| |
-| [하예준](https://github.com/TedJunny) | 유저 인증 기능, 서비스 지역 생성 기능 ||
-| [송치헌](https://github.com/Oraange) |킥보드 반납 및 요금 정책에 따른 요금 계산 기능|
-| [오지윤(팀장)](https://github.com/Odreystella) | 할인/벌금 수정 기능, 지역에 추가되는 할인/벌금 수정 기능 | |
-| [손희정](https://github.com/heejung-gjt) | 할인/벌금 추가 기능, 지역에 추가되는 할인/벌금 추가 기능 |  |
-
-<br>
-<br>
-
 # 📖 과제 내용    
-> 디어는 사용자의 요금을 계산하기 위해 다양한 상황을 고려합니다.
+
+## 1. 배경 및 공통 요구사항
+
+<aside>
+    
+> 
+    😁 **카닥에서 실제로 사용하는 프레임워크를 토대로 타이어 API를 설계 및 구현합니다.**
+
+</aside>
+
+- 데이터베이스 환경은 별도로 제공하지 않습니다.
+ **RDB중 원하는 방식을 선택**하면 되며, sqlite3 같은 별도의 설치없이 이용 가능한 in-memory DB도 좋으며, 가능하다면 Docker로 준비하셔도 됩니다.
+- 단, 결과 제출 시 README.md 파일에 실행 방법을 완벽히 서술하여 DB를 포함하여 전체적인 서버를 구동하는데 문제없도록 해야합니다.
+- 데이터베이스 관련처리는 raw query가 아닌 **ORM을 이용하여 구현**합니다.
+- Response Codes API를 성공적으로 호출할 경우 200번 코드를 반환하고, 그 외의 경우에는 아래의 코드로 반환합니다.
 
 ### **[필수 포함 사항]**
 
@@ -50,32 +46,20 @@
     - 해당 과제를 진행하면서 회고 내용 블로그 포스팅
 - Swagger나 Postman을 이용하여 API 테스트 가능하도록 구현
 
-### **[개발 요구 사항]**
 
-- 지역별로 다양한 요금제 적용 기능
-- 다양한 할인/벌금 조건 추가 기능
-- 킥보드 고장시 1분 이내 요금 청구되지 않는 기능
-
-- 확장성을 고려한 시스템 설계 및 구현
-- 새로운 할인이나 벌금 조건이 쉽게 추가될 수 있는 기능
 
 ### **[기능 개발]**
 
 ✔️ **REST API 기능**
 
-- 킥보드 반납 및 요금 정책에 따른 요금 계산 API
-- 서비스 지역 생성 API
-- 킥보드 대여 API
-- 할인/벌금 요금 추가 API
-- 할인/벌금 요금 수정 API
-- 지역에 추가되는 할인/벌금 추가 API
-- 지역에 추가되는 할인/벌금 수정 API
+- User 회원가입 및 로그인 기능 구현
+- 유저가 소유한 자동차의 타이어 정보 저장하는 기능 구현
+- 유저가 소유한 자동차의 타이어 정보 조회하는 기능 구현
 
 <br>
 <br>
 
-# ➡️ Build(AWS EC2)
-API URL : http://3.38.118.39:8000
+# ➡️ Deploy URL(AWS EC2)
 
 <br>
 <br>
@@ -89,58 +73,70 @@ API URL : http://3.38.118.39:8000
 <br>
 
 # 📋 모델링 ERD
-[Aquerytool URL](https://aquerytool.com/aquerymain/index/?rurl=d7b4f6b6-8da4-4af4-9d3c-fa27b6ed3b26&)     
-Password : 70pd61
 
-![디어db](https://user-images.githubusercontent.com/64240637/142769570-d1caee18-1668-4f19-b92a-e00a70e5261d.png)
+`cardoc.drawio.png` 파일 참조
 
 <br>
 <br>
 
 # 🌲 디렉토리 구조
 ```
-├── areas
-│   ├── admin.py
-│   ├── apps.py
-│   ├── models.py
-│   ├── tests.py
-│   ├── urls.py
-│   └── views.py
-├── charges
-│   ├── admin.py
-│   ├── apps.py
-│   ├── models.py
-│   ├── tests.py
-│   ├── urls.py
-│   └── views.py
-├── config
-│   ├── settings.py
-│   ├── urls.py
-│   └── wsgi.py
-├── CONVENTION.md
-├── core
-│   ├── admin.py
-│   ├── apps.py
-│   ├── models.py
-│   ├── tests.py
-│   ├── utils.py
-│   ├── validation.py
-│   └── views.py
-├── manage.py
-├── my_settings.py
+.
 ├── PULL_REQUEST_TEMPLATE.md
 ├── README.md
+├── __pycache__
+│   └── my_settings.cpython-39.pyc
+├── cardoc
+│   ├── __init__.py
+│   ├── asgi.py
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── cardoc.drawio.png
+├── cars
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── concurrents.py
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   ├── 0002_auto_20211123_1802.py
+│   │   ├── 0003_auto_20211123_1806.py
+│   │   ├── 0004_auto_20211123_1905.py
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       ├── 0001_initial.cpython-39.pyc
+│   │       ├── 0002_auto_20211123_1802.cpython-39.pyc
+│   │       ├── 0003_auto_20211123_1806.cpython-39.pyc
+│   │       └── 0004_auto_20211123_1905.cpython-39.pyc
+│   ├── models.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── core
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── migrations
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── tests.py
+│   ├── utils.py
+│   ├── validations.py
+│   └── views.py
+├── db.sqlite3
+├── manage.py
+├── my_settings.py
 ├── requirements.txt
-├── users
-│   ├── admin.py
-│   ├── apps.py
-│   ├── models.py
-│   ├── tests.py
-│   ├── urls.py
-│   └── views.py
-└── vehicles
+└── users
+    ├── __init__.py
     ├── admin.py
     ├── apps.py
+    ├── migrations
+    │   ├── 0001_initial.py
+    │   ├── 0002_auto_20211123_1802.py
+    │   ├── 0003_alter_user_id.py
+    │   └── 0004_alter_user_id.py
     ├── models.py
     ├── tests.py
     ├── urls.py
@@ -151,7 +147,8 @@ Password : 70pd61
 <br>
 
 # 🔖 API 명세서
-[Postman API Document 보러가기](https://documenter.getpostman.com/view/14348138/UVJWqfGC)
+
+[Postman API Document](https://documenter.getpostman.com/view/17231503/UVJZndcH)
 
 <br>
 

@@ -112,7 +112,10 @@ class SignInViewTest(TestCase):
         )
 
         self.access_token = jwt.encode(
-            {"id"  : str(user.id)}, SECRET_KEY, algorithm = "HS256"
+            {
+                "id"  : str(user.id),
+                "exp" : datetime.now() + timedelta(days = 3)
+            }, SECRET_KEY, algorithm = "HS256"
         )
 
     def tearDown(self):
@@ -131,7 +134,7 @@ class SignInViewTest(TestCase):
 
         self.assertEqual(response.json(), {
             "message" : "SUCCESS",
-            "access_token" : self.access_token
+            "access_token" : response.json()["access_token"]
         })
         self.assertEqual(response.status_code, 200)
 

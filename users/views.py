@@ -70,7 +70,7 @@ class SignInView(View):
                 return JsonResponse({"message" : "INVALID_USER"}, status = 401)
 
             access_token = jwt.encode(
-                {"id"  : str(user.id),}, SECRET_KEY, "HS256")
+                {"id"  : str(user.id), "exp" : datetime.now() + timedelta(days = 3)}, SECRET_KEY, "HS256")
 
             return JsonResponse(
                 {"message" : "SUCCESS", "access_token" : access_token}, status = 200
